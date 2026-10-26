@@ -1,0 +1,71 @@
+/* Design tokens dari Figma "Mafufu Pop Up" (node 2:91). Acuan layar 390 x 976.
+   --d = lebar kontainer game / 390 (diatur oleh main.js), jadi 1 * var(--d) = 1px pada desain. */
+
+@font-face {
+  font-family: 'Fredoka';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/fredoka-700-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700 900;
+  font-display: swap;
+  src: url('../assets/fonts/nunito-latin-variable.woff2') format('woff2');
+}
+
+:root {
+  --d: 1px;
+  --sw: 100vw;
+  --sh: 100vh;
+
+  /* font */
+  --font-display: 'Fredoka', ui-rounded, system-ui, sans-serif;
+  --font-body: 'Nunito', ui-rounded, system-ui, sans-serif;
+
+  /* latar */
+  --bg-deep: #0d0221;
+  --bg-sky: radial-gradient(ellipse 90% 60% at 50% 30%, #2a1450 0%, #1a0838 45%, #0d0221 100%);
+
+  /* kartu / modal */
+  --card-top: #5622ba;
+  --card-mid: #46189e;
+  --card-bottom: #3a1387;
+  --card-border: #9167f5;
+  --card-shadow: rgba(20, 5, 54, 0.85);
+
+  /* teks */
+  --title-yellow: #ffde38;
+  --coin-yellow: #ffd93b;
+  --text-main: #ffffff;
+  --text-soft: #f3e8ff;
+  --text-muted: #e9d5ff;
+  --text-dot: #c084fc;
+
+  /* combo / HUD */
+  --combo-text: #fcd34d;
+  --combo-strong: #fbbf24;
+  --combo-dot: rgba(251, 191, 36, 0.7);
+  --pill-bg: rgba(56, 28, 110, 0.9);
+  --pill-border: rgba(250, 204, 21, 0.3);
+  --hud-btn-bg: rgba(59, 7, 100, 0.7);
+  --hud-btn-border: rgba(192, 132, 252, 0.3);
+
+  /* tombol utama (oranye) */
+  --btn1-top: #ffbc3b;
+  --btn1-mid: #f79010;
+  --btn1-bottom: #ee6800;
+  --btn1-border: #ffe391;
+  --btn1-edge: #872e00;
+
+  /* tombol sekunder (ungu) */
+  --btn2-top: #6c47cb;
+  --btn2-mid: #4d26a8;
+  --btn2-bottom: #3a198c;
+  --btn2-border: #8f6ced;
+  --btn2-edge: #1b054d;
+
+  --focus-ring: rgba(255, 222, 56, 0.8);
+}

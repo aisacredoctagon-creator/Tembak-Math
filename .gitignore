@@ -1,0 +1,17 @@
+# Sistem / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+
+# Rahasia (jangan pernah di-commit)
+.env
+.env.*
+
+# Dependensi / hasil build (proyek ini statis, tanpa build)
+node_modules/
+_site/
+
+# Konfigurasi lokal alat bantu
+.claude/

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>Tes Math Gun Runner</title>
+  <style>body{font:16px system-ui;padding:20px;background:#14082f;color:#fff}.ok{color:#7dffb2}.bad{color:#ff8a8a}pre{white-space:pre-wrap}</style>
+</head>
+<body>
+  <h1>Tes Math Gun Runner</h1>
+  <pre id="out">Menjalankan...</pre>
+  <script type="module">
+    import { runTests } from './tests.js';
+    const t0 = performance.now();
+    const r = runTests();
+    const out = document.getElementById('out');
+    out.className = r.failed ? 'bad' : 'ok';
+    out.textContent = `Lulus: ${r.passed}   Gagal: ${r.failed}   (${Math.round(performance.now() - t0)} ms)\n` +
+      r.failures.map((f) => ' - ' + f).join('\n') +
+      '\n\nPeluang menang bot (akurasi -> level 1 / 10 / 20 / 30):\n' +
+      r.stats.map((s) => `  ${s.diff} ${Math.round(s.acc * 100)}%: ${[s.L1, s.L10, s.L20, s.L30].map((v) => Math.round(v * 100) + '%').join(' / ')}`).join('\n');
+    console.log(out.textContent);
+  </script>
+</body>
+</html>

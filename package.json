@@ -1,0 +1,11 @@
+{
+  "name": "math-gun-runner",
+  "version": "1.0.0",
+  "description": "Math Gun Runner - game matematika ala gun runner (vanilla JS, tanpa build step)",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "npx serve .",
+    "test": "node tests/run.js"
+  }
+}

@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0d0221">
+  <meta name="description" content="Tembak Math (Math Gun Runner): game lari-tembak dengan soal matematika tambah, kurang, kali, bagi untuk siswa SD sampai SMP.">
+  <meta property="og:title" content="Tembak Math - Math Gun Runner">
+  <meta property="og:description" content="Game matematika seru: tembak jawaban yang benar! (tambah, kurang, kali, bagi)">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="id_ID">
+  <title>Tembak Math - Math Gun Runner</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%235622ba'/%3E%3Ctext x='32' y='46' font-size='40' font-weight='900' text-anchor='middle' fill='%23ffde38' font-family='Arial'%3E%C3%97%3C/text%3E%3C/svg%3E">
+  <link rel="preload" href="assets/fonts/fredoka-700-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/nunito-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+  <div id="space" aria-hidden="true"></div>
+
+  <div id="app">
+    <aside class="side side-left" aria-label="Petunjuk kontrol">
+      <div class="side-brand">Math<br>Gun<br>Runner</div>
+      <div class="side-panel">
+        <h3>Kontrol Keyboard</h3>
+        <ul>
+          <li><kbd>←</kbd> <kbd>→</kbd> atau <kbd>A</kbd> <kbd>D</kbd><span>geser robot</span></li>
+          <li><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd><span>pilih gerbang / jawaban boss</span></li>
+          <li><kbd>H</kbd><span>hint (hilangkan satu jawaban salah)</span></li>
+          <li><kbd>Esc</kbd> <kbd>P</kbd> <kbd>Spasi</kbd><span>jeda</span></li>
+          <li><kbd>Drag</kbd> mouse<span>geser robot</span></li>
+        </ul>
+      </div>
+      <div class="float-sym" aria-hidden="true"><i>+</i><i>−</i><i>×</i><i>÷</i></div>
+    </aside>
+
+    <main id="stage">
+      <div class="space-layer" id="stage-space" aria-hidden="true"><div class="space-track"></div><div class="space-fade"></div></div>
+      <canvas id="game" aria-label="Area permainan Math Gun Runner"></canvas>
+
+      <!-- HUD saat bermain (Figma: header 44px) -->
+      <div id="hud" class="hud hidden">
+        <header class="hud-bar">
+          <span class="hud-level" id="hud-level">Level 1</span>
+          <div class="combo-pill is-off" id="hud-combo" aria-live="polite">
+            <span class="c1" id="combo-n">Combo 1</span><span class="cdot">·</span><span class="c2" id="combo-m">×1</span>
+          </div>
+          <div class="hud-right">
+            <button class="hud-circle" id="btn-hint" type="button" aria-label="Hint: hilangkan satu jawaban salah">
+              <img src="assets/icon-hint.svg" width="14" height="14" alt=""><span id="hint-count">3</span>
+            </button>
+            <button class="hud-circle pause" id="btn-pause" type="button" aria-label="Jeda">
+              <img src="assets/icon-pause.svg" width="16" height="16" alt="">
+            </button>
+          </div>
+        </header>
+        <div class="hud-progress" aria-hidden="true">
+          <div class="hud-progress-bar" id="hud-progress-bar"></div>
+          <span class="hud-progress-boss">BOSS</span>
+        </div>
+        <div class="hud-hint hidden" id="hud-hint">
+          <div class="hint-q" id="hint-q"></div>
+          <div class="hint-row" id="hint-choices"></div>
+          <div class="hint-timer" aria-hidden="true"><div id="hint-timer-bar"></div></div>
+        </div>
+        <div class="feedback hidden" id="feedback" role="status"></div>
+        <div class="boss-choices hidden" id="boss-choices"></div>
+      </div>
+
+      <!-- Layar pembuka -->
+      <section class="screen active splash" id="screen-splash" aria-label="Math Gun Runner">
+        <div class="splash-logo">
+          <div class="splash-orb" aria-hidden="true"><i></i><i></i><i></i></div>
+          <h1 class="title"><span>Math</span><span>Gun</span><span>Runner</span></h1>
+          <p class="tagline">Ketuk untuk mulai</p>
+        </div>
+      </section>
+
+      <!-- Menu utama -->
+      <section class="screen" id="screen-menu" aria-label="Menu utama">
+        <div class="menu-top">
+          <span class="coin-chip" id="menu-coins" aria-label="Koin">0</span>
+          <button class="icon-btn mute-btn" id="btn-mute-menu" type="button" aria-label="Suara">🔊</button>
+        </div>
+        <div class="menu-body">
+          <h1 class="title"><span>Math</span><span>Gun</span><span>Runner</span></h1>
+          <p class="tagline">Hitung, pilih gerbang yang benar, kalahkan boss!</p>
+          <div class="btn-col">
+            <button class="btn btn-primary" id="btn-play" type="button">Main</button>
+            <button class="btn" id="btn-levels" type="button">Pilih Level</button>
+            <button class="btn" id="btn-shop" type="button">Toko</button>
+            <button class="btn" id="btn-settings" type="button">Pengaturan</button>
+            <button class="btn" id="btn-how" type="button">Cara Bermain</button>
+          </div>
+          <p class="menu-info" id="menu-info"></p>
+        </div>
+      </section>
+
+      <!-- Pilih level -->
+      <section class="screen" id="screen-levels" aria-label="Pilih level">
+        <header class="screen-head">
+          <button class="icon-btn" type="button" data-back aria-label="Kembali">←</button>
+          <h2 class="page-title">Pilih Level</h2>
+        </header>
+        <div class="seg" id="levels-diff" role="group" aria-label="Tingkat kesulitan"></div>
+        <div class="scroll" id="levels-grid"></div>
+      </section>
+
+      <!-- Pengaturan -->
+      <section class="screen" id="screen-settings" aria-label="Pengaturan">
+        <header class="screen-head">
+          <button class="icon-btn" type="button" id="btn-settings-back" aria-label="Kembali">←</button>
+          <h2 class="page-title">Pengaturan</h2>
+        </header>
+        <div class="scroll">
+          <div class="setting">
+            <h3>Tingkat Kesulitan</h3>
+            <div class="seg" id="set-diff" role="group" aria-label="Tingkat kesulitan"></div>
+            <p class="hint-text" id="set-diff-info"></p>
+          </div>
+          <div class="setting">
+            <h3>Fokus Operasi</h3>
+            <div class="seg wrap" id="set-focus" role="group" aria-label="Fokus operasi"></div>
+          </div>
+          <div class="setting">
+            <h3>Kecepatan</h3>
+            <div class="seg" id="set-speed" role="group" aria-label="Kecepatan lari"></div>
+            <p class="hint-text" id="set-speed-info"></p>
+          </div>
+          <div class="setting">
+            <h3>Suara</h3>
+            <div class="seg">
+              <button class="seg-btn" id="set-sound" type="button" aria-pressed="true">Efek suara: Nyala</button>
+              <button class="seg-btn" id="set-music" type="button" aria-pressed="true">Musik: Nyala</button>
+            </div>
+          </div>
+          <div class="setting">
+            <h3>Tampilan dan Aksesibilitas</h3>
+            <p class="hint-text">Kualitas grafis (turunkan bila game terasa patah-patah):</p>
+            <div class="seg" id="set-quality" role="group" aria-label="Kualitas grafis"></div>
+            <div class="seg wrap">
+              <button class="seg-btn" id="set-motion" type="button" aria-pressed="false">Kurangi gerakan: Mati</button>
+              <button class="seg-btn" id="set-haptic" type="button" aria-pressed="true">Getar: Nyala</button>
+              <button class="seg-btn" id="set-cb" type="button" aria-pressed="false">Mode buta warna: Mati</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Toko -->
+      <section class="screen" id="screen-shop" aria-label="Toko">
+        <header class="screen-head">
+          <button class="icon-btn" type="button" data-back aria-label="Kembali">←</button>
+          <h2 class="page-title">Toko</h2>
+          <span class="coin-chip" id="shop-coins">0</span>
+        </header>
+        <div class="seg" id="shop-tabs" role="group" aria-label="Kategori toko"></div>
+        <div class="scroll shop-list" id="shop-list"></div>
+      </section>
+
+      <!-- Cara bermain -->
+      <section class="screen" id="screen-how" aria-label="Cara bermain">
+        <header class="screen-head">
+          <button class="icon-btn" type="button" data-back aria-label="Kembali">←</button>
+          <h2 class="page-title">Cara Bermain</h2>
+        </header>
+        <div class="scroll how">
+          <div class="card"><b>1. Geser robot</b><p>Geser jarimu ke kiri atau kanan di layar (di komputer: tombol ← → atau A D). Nobo si Blaster Bot melayang maju sendiri. Cincin energinya bertambah seiring pelurumu.</p></div>
+          <div class="card"><b>2. Setiap gerbang adalah soal</b>
+            <div class="demo-row"><span class="chip">7 × 3 = ?</span></div>
+            <div class="demo-row"><span class="chip">21</span><span class="chip">24</span></div>
+            <p>Baca soal di atas layar, hitung, lalu geser robot ke gerbang berisi jawaban yang benar sebelum gerbang tiba. Di komputer, tombol <b>1 2 3</b> langsung memilih gerbang.</p></div>
+          <div class="card"><b>3. Benar atau salah</b>
+            <p>Benar: <b>+10 peluru</b> dikali combo (×1, ×1,5, ×2, sampai ×3). Salah: <b>−5 peluru</b> dan combo mulai dari awal. Jawaban yang benar ditampilkan sebentar.</p></div>
+          <div class="card"><b>4. Jenis soal</b>
+            <div class="demo-row"><span class="chip">□ + 9 = 17</span><span class="chip">12 ? 4 = 3</span><span class="chip">6×4 … 5×5</span><span class="chip">2, 4, 8, ?</span></div>
+            <p>Ada angka hilang, pilih operasi (+ − × ÷), perbandingan (&gt; &lt; =), soal cerita, soal dua langkah, dan pola angka.</p></div>
+          <div class="card"><b>5. Hint</b><p>Tekan tombol lampu di pojok kanan atas (atau tombol <b>H</b>) untuk menghilangkan satu jawaban salah. Ada 3 hint di setiap level.</p></div>
+          <div class="card"><b>6. Boss</b><p>Boss mengajukan soal cepat. Jawaban benar menembakkan pelurumu ke boss. Jawaban salah atau waktu habis membuat boss menyerang dan pelurumu berkurang. Bintang dihitung dari akurasi dan peluru yang tersisa. Soal yang salah bisa dilihat di <b>Ulasan</b>.</p></div>
+        </div>
+      </section>
+
+      <!-- Jeda (dibangun oleh js/ui.js) -->
+      <section class="screen modal-overlay" id="screen-pause" aria-label="Permainan dijeda" role="dialog" aria-modal="true">
+        <div class="modal-card" id="pause-card"></div>
+      </section>
+
+      <!-- Hasil: Menang / Kalah (dibangun oleh js/ui.js) -->
+      <section class="screen modal-overlay" id="screen-result" aria-label="Hasil level" role="dialog" aria-modal="true">
+        <div class="modal-card" id="result-card"></div>
+      </section>
+
+      <!-- Ulasan soal yang salah -->
+      <section class="screen" id="screen-review" aria-label="Ulasan soal">
+        <header class="screen-head">
+          <button class="icon-btn" type="button" id="btn-review-back" aria-label="Kembali">←</button>
+          <h2 class="page-title">Ulasan</h2>
+        </header>
+        <div class="scroll" id="review-list"></div>
+      </section>
+    </main>
+
+    <aside class="side side-right" aria-label="Tips">
+      <div class="side-panel">
+        <h3>Tips</h3>
+        <ul class="tips">
+          <li>Baca soal di bagian atas layar, hitung, lalu pilih gerbang.</li>
+          <li>Tombol <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> memilih gerbang, <kbd>H</kbd> memakai hint.</li>
+          <li>Jawaban benar berturut-turut menaikkan combo sampai ×3.</li>
+          <li>Atur tingkat, fokus operasi, dan kecepatan di Pengaturan.</li>
+        </ul>
+      </div>
+      <div class="float-sym" aria-hidden="true"><i>×</i><i>÷</i><i>+</i><i>−</i></div>
+    </aside>
+  </div>
+
+  <div id="rotate" role="alert">
+    <div class="rotate-icon">📱</div>
+    <p>Putar HP ke mode portrait untuk bermain</p>
+  </div>
+
+  <div id="file-warning" style="display:none;position:fixed;inset:0;z-index:200;background:#0d0221;color:#fff;padding:24px;font:18px/1.5 system-ui,sans-serif">
+    <h2 style="color:#ffde38">Game belum bisa jalan dari file</h2>
+    <p>Browser memblokir game kalau <b>index.html</b> dibuka langsung (alamat diawali <code>file://</code>).</p>
+    <p>Cara menjalankan: klik dua kali <b>start.bat</b> di folder game, atau jalankan <code>python -m http.server 8000</code> di folder ini lalu buka <code>http://localhost:8000</code>.</p>
+  </div>
+  <script>if (location.protocol === 'file:') document.getElementById('file-warning').style.display = 'block';</script>
+
+  <script>
+    // Service worker (path relatif supaya jalan di sub-path /Tembak-Math/); hanya di http(s)
+    if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+      window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+    }
+  </script>
+
+  <noscript><p style="color:#fff;padding:2rem">Game ini membutuhkan JavaScript.</p></noscript>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
